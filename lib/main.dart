@@ -57,6 +57,7 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
   String? selectedWorkType;
   String? selectedFootpathType;
   String metersCompleted = '';
+  String basesQuantity = '';
 
   final List<String> workTypes = [
     'Footpaths',
@@ -80,7 +81,7 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
         child: Column(
           children: [
             buildTileSelector(
-              label: 'Selector Work Type:',
+              label: 'Work Type:',
               options: workTypes,
               selectedValue: selectedWorkType,
               onSelected: (value) {
@@ -129,6 +130,38 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                   onChanged: (value) {
                     metersCompleted = value; 
                   },
+              ),
+            ],
+
+            if (selectedWorkType == 'Bases') ... [
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Number of Bases Completed',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType:TextInputType.number,
+                onChanged: (value){
+                  basesQuantity = value;
+                },
+              ),
+            ],
+
+            if (selectedWorkType == 'Day Works') ... [
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Hours Worked',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType:TextInputType.number,
+                onChanged: (value){
+                  basesQuantity = value;
+                },
               ),
             ],
           ],
