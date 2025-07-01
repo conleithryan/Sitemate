@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Flutter mobile application called "Sitemate" - a work logging system for construction workers. The app allows workers to log different types of construction work (Footpaths, Bases, Foundations, Kerbing) with type-specific fields and view their logged entries.
+This is a Flutter mobile application called "Sitemate" - a work logging system for construction workers. The app allows workers to log different types of construction work across 8 comprehensive work types, each with specific measurement fields, and view their logged entries.
 
 ## Development Commands
 
@@ -56,20 +56,33 @@ flutter pub outdated
 - **Navigation**: Simple push/pop navigation between screens
 
 ### Data Model
-- **WorkEntry class**: Represents a single work log entry with fields:
-  - `workType`: Required field for type of work
+- **WorkEntry class**: Represents a single work log entry with standardized fields:
+  - `workType`: Required field for type of work (one of 8 work types)
   - `footpathType`: Optional field specific to footpath work (Main/Housing)
-  - `metersCompleted`: Optional field for footpath meters
-  - `basesQuantity`: Optional field for number of bases completed
+  - `metersSquare`: Optional field for square meter measurements (m²)
+  - `metersCubic`: Optional field for cubic meter measurements (m³)
+  - `metersTotal`: Optional field for total meter measurements
+  - `quantity`: Optional field for quantity/count measurements
+  - `hours`: Optional field for time-based measurements
   - `dateTime`: Timestamp when entry was created
+
+### Work Types and Required Fields
+1. **Footpaths**: Main/Housing selector + m² + m³
+2. **Bases**: m³ + quantity
+3. **Foundations**: m² + m³
+4. **Kerbing**: meters total
+5. **Shuttering**: meters total
+6. **Manholes**: quantity
+7. **Day Works**: hours
+8. **Base Prep**: m² (insulation and mesh)
 
 ### UI Components
 - **Home Screen**: Landing page with navigation buttons
 - **AddWorkScreen**: Form-based logging interface with:
-  - Horizontal scrolling tile selectors for work types
-  - Conditional form fields based on work type selection
-  - Validation and success/error messaging
-- **ViewWorkScreen**: List view of all saved work entries
+  - Horizontal scrolling tile selectors for all 8 work types
+  - Conditional form fields based on work type selection (each type shows relevant measurement fields)
+  - Comprehensive validation and success/error messaging for all work types
+- **ViewWorkScreen**: List view of all saved work entries with date/time stamps
 
 ### Key Dependencies
 - `shared_preferences: ^2.2.2` - Local device storage
@@ -78,9 +91,23 @@ flutter pub outdated
 
 ### Development Notes
 - The app uses extensive debug print statements for development tracking
-- Form validation is handled inline with setState updates
-- Data persistence uses string serialization with pipe-delimited format
-- Color coding is used throughout for different work types (blue=footpaths, orange=bases, etc.)
+- Form validation is handled inline with setState updates for all 8 work types
+- Data persistence uses string serialization with pipe-delimited format (8 fields total)
+- Comprehensive color coding system for all work types:
+  - Footpaths: Blue
+  - Bases: Orange  
+  - Foundations: Brown
+  - Kerbing: Purple
+  - Shuttering: Teal
+  - Manholes: Indigo
+  - Day Works: Green
+  - Base Prep: Red
+
+### Current Limitations
+- ViewWorkScreen only displays detailed fields for Footpaths work type
+- No edit/delete functionality for saved entries
+- No data export capabilities (CSV, PDF, etc.)
+- No summary statistics or reporting features
 
 ## Working Style
 
