@@ -6,40 +6,47 @@ void main() {
   runApp(const Sitemate());
 }
 
-// Class to represent a single work entry (like a form that was filled out)
+// Class to represent a single work entry 
 class WorkEntry {
-  final String workType; // Which type of work (Footpaths, Bases, etc)
-  final String? footpathType; // Main or Housing (only for footpaths)
-  final String? metersCompleted; // How many meters (only for footpaths)
-  final String? basesQuantity; // How many bases (only for bases)
-  final DateTime dateTime; // When this entry was created
+  final String workType; 
+  final String? footpathType; 
+  final String? metersSquare; 
+  final String? metersCubic;
+  final String? metersTotal;
+  final String? quantity; 
+  final String? hours;
+  final DateTime dateTime; 
 
   // Constructor - creates a new WorkEntry object
   WorkEntry({
-    required this.workType, // required = must be provided
-    this.footpathType, // optional (no required)
-    this.metersCompleted, // optional
-    this.basesQuantity, // optional
+    required this.workType, 
+    this.footpathType, 
+    this.metersSquare,
+    this.metersCubic,
+    this.metersTotal,
+    this.quantity,
+    this.hours,
+
     required this.dateTime,
   });
 
   // Converts the work entry to a string so we can save it
-  // Example output: "Footpaths|Main|50|null|2024-01-15T10:30:00"
   String toStorageString() {
-    return '${workType}|${footpathType ?? ""}|${metersCompleted ?? ""}|${basesQuantity ?? ""}|${dateTime.toIso8601String()}';
+    return '${workType}|${footpathType ?? ""}|${metersSquare?? ""}|${metersCubic ?? ""}|${metersTotal ?? ""}|${quantity ?? ""}|${hours ?? ""}|${dateTime.toIso8601String()}';
   }
 
   // Creates a WorkEntry from a saved string (opposite of toStorageString)
   static WorkEntry fromStorageString(String data) {
-    final parts = data.split('|'); // Split by | character
+    final parts = data.split('|'); 
     return WorkEntry(
       workType: parts[0],
-      footpathType: parts[1].isEmpty
-          ? null
-          : parts[1], // Convert 'null' string back to null
-      metersCompleted: parts[2].isEmpty ? null : parts[2],
-      basesQuantity: parts[3].isEmpty ? null : parts[3],
-      dateTime: DateTime.parse(parts[4]), // Convert string back to DateTime
+      footpathType: parts[1].isEmpty ? null: parts[1], 
+      metersSquare: parts[2].isEmpty ? null : parts[2],
+      metersCubic: parts[3].isEmpty ? null : parts[3],
+      metersTotal: parts[4].isEmpty ? null : parts[4],
+      quantity: parts[5].isEmpty ? null : parts[5],
+      hours: parts[6].isEmpty ? null : parts[6],
+      dateTime: DateTime.parse(parts[7]), 
     );
   }
 }
@@ -131,8 +138,11 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
   // Form field variables - these store what the user enters
   String? selectedWorkType;
   String? selectedFootpathType;
-  String metersCompleted = '';
-  String basesQuantity = '';
+  String metersSquare = '';
+  String metersCubic = '';
+  String metersTotal = '';
+  String quantity = '';
+  String hours = '';
   String? errorMessage;
   String? successMessage;
   // List of work types to show in the selector
@@ -141,6 +151,10 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
     'Bases',
     'Foundations',
     'Kerbing',
+    'Shuttering',
+    'Manholes',
+    'Day Works',
+    'Base Prep',
   ];
 
   @override
@@ -169,6 +183,10 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                 'Bases': Colors.orange,
                 'Foundations': Colors.brown,
                 'Kerbing': Colors.purple,
+                'Shuttering': Colors.teal,
+                'Manholes': Colors.indigo,
+                'Day Works': Colors.green,
+                'Base Prep': Colors.red,
               },
             ),
 
@@ -203,8 +221,6 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
             // Show footpath-specific fields when Footpaths is selected
             if (selectedWorkType == 'Footpaths') ...[
               SizedBox(height: 20),
-
-              // Footpath type selector (Main or Housing)
               buildTileSelector(
                 label: 'Select Footpath Type:',
                 options: ['Main', 'Housing'],
@@ -219,19 +235,30 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                   'Housing': Colors.blue[400]!,
                 },
               ),
-
               SizedBox(height: 20),
 
-              // Meters input field
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Meters Completed',
+                  labelText: 'Square Meters (m²)',
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(20), // Big touch target
+                  contentPadding: EdgeInsets.all(20),
                 ),
-                keyboardType: TextInputType.number, // Number keyboard
+                keyboardType: TextInputType.number, 
                 onChanged: (value) {
-                  metersCompleted = value; // Store what user types
+                  metersSquare = value;
+                },
+              ),
+              SizedBox(height:20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Cubic Meters (m³)',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number, 
+                onChanged: (value) {
+                  metersCubic = value;
                 },
               ),
             ],
@@ -242,16 +269,137 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
 
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Number of Bases Completed',
+                  labelText: 'Cubic Meters (m³)',
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.all(20),
                 ),
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
-                  basesQuantity = value;
-                  print(
-                    'Number of Bases Completed: $basesQuantity',
-                  ); // Debug print
+                  metersCubic = value;
+                },
+              ),
+
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Quantity',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  quantity = value;
+                },
+              ),
+            ],
+
+            if (selectedWorkType == 'Foundations') ...[
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Square Meters (m²)',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  metersSquare = value;
+                },
+              ),
+
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Cubic Meters (m³)',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  metersCubic = value;
+                },
+              ),
+            ],
+
+            if (selectedWorkType == 'Kerbing') ...[
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Meters Total',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  metersTotal = value;
+                },
+              ),
+            ],
+
+            if (selectedWorkType == 'Shuttering') ...[
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Meters Total',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  metersTotal = value;
+                },
+              ),
+            ],
+
+            if (selectedWorkType == 'Manholes') ...[
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Quantity',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  quantity = value;
+                },
+              ),
+            ],
+
+            if (selectedWorkType == 'Day Works') ...[
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Hours',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  hours = value;
+                },
+              ),
+            ],
+
+            if (selectedWorkType == 'Base Prep') ...[
+              SizedBox(height: 20),
+
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Square Meters (m²) - Insulation and Mesh',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.all(20),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  metersSquare = value;
                 },
               ),
             ],
@@ -270,14 +418,39 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                     if (selectedFootpathType == null) {
                       canSave = false;
                       error = 'Please enter footpath type';
-                    } else if (metersCompleted.isEmpty) {
+                    } else if (metersSquare.isEmpty || metersCubic.isEmpty) {
                       canSave = false;
-                      error = 'Please enter meters completed';
+                      error = 'Please enter both square and cubic meters';
                     }
                   } else if (selectedWorkType == 'Bases') {
-                    if (basesQuantity.isEmpty) {
+                    if (metersCubic.isEmpty || quantity.isEmpty) {
                       canSave = false;
-                      error = 'Please enter number of bases';
+                      error = 'Please enter both cubic meters and quantity';
+                    }
+                  } else if (selectedWorkType == 'Foundations') {
+                    if (metersCubic.isEmpty || metersSquare.isEmpty) {
+                      canSave = false;
+                      error = 'Please enter both square and cubic meters';
+                    }
+                  } else if (selectedWorkType == 'Kerbing' || selectedWorkType == 'Shuttering') {
+                    if (metersTotal.isEmpty) {
+                      canSave = false;
+                      error = 'Please enter meters total';
+                    }
+                  } else if (selectedWorkType == 'Manholes') {
+                    if (quantity.isEmpty) {
+                      canSave = false;
+                      error = 'Please enter quantity';
+                    } 
+                  } else if (selectedWorkType == 'Day Works') {
+                    if (hours.isEmpty) {
+                      canSave = false;
+                      error = 'Please enter hours';
+                    }
+                  } else if (selectedWorkType == 'Base Prep') {
+                    if (metersSquare.isEmpty) {
+                      canSave = false;
+                      error = 'Please enter meters square';
                     }
                   }
 
@@ -285,8 +458,11 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                     // Store values before clearing (we need them for saving)
                     final savedWorkType = selectedWorkType;
                     final savedFootpathType = selectedFootpathType;
-                    final savedMeters = metersCompleted;
-                    final savedBases = basesQuantity;
+                    final savedMetersSquare = metersSquare;
+                    final savedMetersCubic = metersCubic;
+                    final savedMetersTotal = metersTotal;
+                    final savedQuantity = quantity;
+                    final savedHours = hours;
 
                     // Update UI - clear form and show success
                     setState(() {
@@ -296,16 +472,22 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                       // Clear all form fields for next entry
                       selectedWorkType = null;
                       selectedFootpathType = null;
-                      metersCompleted = '';
-                      basesQuantity = '';
+                      metersSquare = '';
+                      metersCubic = '';
+                      metersTotal = '';
+                      quantity = '';
+                      hours = '';
                     });
 
                     // Save to device storage
                     saveWorkEntry(
                       workType: savedWorkType!,
                       footpathType: savedFootpathType,
-                      metersCompleted: savedMeters,
-                      basesQuantity: savedBases,
+                      metersSquare: savedMetersSquare,
+                      metersCubic: savedMetersCubic,
+                      metersTotal: savedMetersTotal,
+                      quantity: savedQuantity,
+                      hours: savedHours,
                     );
 
                     // Hide success message after 2 seconds
@@ -321,12 +503,22 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
 
                     if (savedWorkType == 'Footpaths') {
                       print('Footpath type: $savedFootpathType');
-                      print('Meters: $savedMeters');
+                      print('Meters Square: $savedMetersSquare, Cubic: $savedMetersCubic');
                     } else if (savedWorkType == 'Bases') {
-                      print('Bases quantity: $savedBases');
+                      print('Bases cubic: $savedMetersCubic, quantity: $savedQuantity');
+                    } else if (savedWorkType == 'Foundations') {
+                      print('Meters Square: $savedMetersSquare, Cubic: $savedMetersCubic');
+                    } else if (savedWorkType == 'Kerbing') {
+                      print('Meters Total: $savedMetersTotal');
+                    } else if (savedWorkType == 'Manholes') {
+                      print('Quantity: $savedQuantity');
+                    } else if (savedWorkType == 'Day Works') {
+                      print('Hours: $savedHours');
+                    } else if (savedWorkType == 'Base Prep') {
+                      print('Meters Square: $savedMetersSquare');
                     }
                   } else {
-                    // Show error message
+                    // Show error message 
                     setState(() {
                       errorMessage = error;
                     });
@@ -338,7 +530,7 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                   padding: EdgeInsets.symmetric(
                     horizontal: 50,
                     vertical: 20,
-                  ), // Big button
+                  ),
                 ),
                 child: Text('SAVE ENTRY', style: TextStyle(fontSize: 18)),
               ),
@@ -456,15 +648,21 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
   Future<void> saveWorkEntry({
     required String workType,
     String? footpathType,
-    String? metersCompleted,
-    String? basesQuantity,
+    String? metersSquare,
+    String? metersCubic,
+    String? metersTotal,
+    String? quantity,
+    String? hours,
   }) async {
     // Create a WorkEntry object with current time
     final entry = WorkEntry(
       workType: workType,
       footpathType: footpathType,
-      metersCompleted: metersCompleted,
-      basesQuantity: basesQuantity,
+      metersSquare: metersSquare,
+      metersCubic: metersCubic,
+      metersTotal: metersTotal,
+      quantity: quantity,
+      hours: hours,
       dateTime: DateTime.now(),
     );
 
@@ -582,7 +780,8 @@ class _ViewWorkScreenState extends State<ViewWorkScreen> {
                               Text(
                                 'Footpath Type: ${entry.footpathType ?? "N/A"}',
                               ),
-                              Text('Meters: ${entry.metersCompleted ?? "N/A"}'),
+                              Text('Meters: ${entry.metersSquare ?? "N/A"}'),
+                              Text('Meters: ${entry.metersCubic?? "N/A"}'),
                             ],
                           ],
                         ),

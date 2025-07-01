@@ -90,3 +90,18 @@ flutter pub outdated
 - Claude should provide ideas and directions for app development when requested
 - Claude should focus on minimal, targeted problem identification for bugs
 - Claude can suggest features, architecture ideas, and development directions
+
+## Code Writing Restrictions
+
+**IMPORTANT**: Claude should operate in read-only mode by default. Claude should NOT write, edit, or modify any code files unless explicitly instructed with the confirmation code: **9226**
+
+When the confirmation code 9226 is provided, Claude may:
+- Write new code files
+- Edit existing code files
+- Make code modifications as requested
+
+Without the confirmation code, Claude should only:
+- Read and analyze code
+- Provide guidance and suggestions
+- Debug and identify issues
+- Answer questions about the codebase
