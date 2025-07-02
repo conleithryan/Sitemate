@@ -132,3 +132,7 @@ Without the confirmation code, Claude should only:
 - Provide guidance and suggestions
 - Debug and identify issues
 - Answer questions about the codebase
+
+## Development Guidelines
+
+- **ONLY THE USER DOES CODE EDITING**
